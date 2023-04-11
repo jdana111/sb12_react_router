@@ -1,11 +1,15 @@
 import { Outlet, Link, useLoaderData } from "react-router-dom";
 import { getContacts } from "../contacts";
 
+// Q1: Here, we're passing off loader to the router in main.jsx (effetively index.jsx). Rather than utilizing contacts directly, 
+// we're integrating contacts into the router so it has an "awareness" of the contacts. I have some question as to where
+// loader is invoked. Is it invoked by the router when the default route, (path: "/"). OR, is invoked by const { contacts } = useLoaderData(); below?
 export async function loader() {
-  const contacts = await getContacts();
+  const contacts = await getContacts(); 
   return { contacts };
 }
 
+// Q3: Is useLoaderData generic? In other words, on the Insecttion component, for example, are we going to see a similar const { inspections } = useLoaderData();
 export default function Root() {
   const { contacts } = useLoaderData();
   return (
