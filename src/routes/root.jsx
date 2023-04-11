@@ -1,4 +1,10 @@
-import { Outlet, NavLink, Link, useLoaderData, Form } from "react-router-dom";
+import {
+  Outlet,
+  NavLink,
+  useNavigation,
+  useLoaderData,
+  Form,
+} from "react-router-dom";
 import { getContacts, createContact } from "../contacts";
 
 // Q1: Here, we're passing off loader to the router in main.jsx (effetively index.jsx). Rather than utilizing contacts directly,
@@ -15,7 +21,8 @@ export async function action() {
 }
 
 export default function Root() {
-  const { contacts } = useLoaderData(); // Q1.
+  const { contacts } = useLoaderData();
+  const navigation = useNavigation();
   return (
     <>
       <div id="sidebar">
@@ -44,14 +51,10 @@ export default function Root() {
                   <NavLink
                     to={`contacts/${contact.id}`}
                     className={({ isActive, isPending }) =>
-                      isActive
-                        ? "active"
-                        : isPending
-                        ? "pending"
-                        : ""
+                      isActive ? "active" : isPending ? "pending" : ""
                     }
                   >
-                        {contact.first || contact.last ? (
+                    {contact.first || contact.last ? (
                       <>
                         {contact.first} {contact.last}
                       </>
@@ -70,7 +73,10 @@ export default function Root() {
           )}{" "}
         </nav>
       </div>
-      <div id="detail">
+      <div
+        id="detail"
+        className={navigation.state === "loading" ? "loading" : ""}
+      >
         <Outlet />
       </div>
     </>
