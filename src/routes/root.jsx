@@ -1,17 +1,21 @@
-import { Outlet, Link, useLoaderData } from "react-router-dom";
-import { getContacts } from "../contacts";
+import { Outlet, Link, useLoaderData, Form } from "react-router-dom";
+import { getContacts, createContact } from "../contacts";
 
-// Q1: Here, we're passing off loader to the router in main.jsx (effetively index.jsx). Rather than utilizing contacts directly, 
+// Q1: Here, we're passing off loader to the router in main.jsx (effetively index.jsx). Rather than utilizing contacts directly,
 // we're integrating contacts into the router so it has an "awareness" of the contacts. I have some question as to where
 // loader is invoked. Is it invoked by the router when the default route, (path: "/"). OR, is invoked by const { contacts } = useLoaderData(); below?
 export async function loader() {
-  const contacts = await getContacts(); 
+  const contacts = await getContacts();
   return { contacts };
 }
 
-// Q3: Is useLoaderData generic? In other words, on the Insecttion component, for example, are we going to see a similar const { inspections } = useLoaderData();
+export async function action() {
+  const contact = await createContact();
+  return { contact };
+}
+
 export default function Root() {
-  const { contacts } = useLoaderData();
+  const { contacts } = useLoaderData(); // Q1.
   return (
     <>
       <div id="sidebar">
@@ -28,12 +32,12 @@ export default function Root() {
             <div id="search-spinner" aria-hidden hidden={true} />
             <div className="sr-only" aria-live="polite"></div>
           </form>
-          <form method="post">
+          <Form method="post">
             <button type="submit">New</button>
-          </form>
+          </Form>
         </div>
         <nav>
-        {contacts.length ? (
+          {contacts.length ? (
             <ul>
               {contacts.map((contact) => (
                 <li key={contact.id}>
@@ -54,7 +58,8 @@ export default function Root() {
             <p>
               <i>No contacts</i>
             </p>
-          )}        </nav>
+          )}{" "}
+        </nav>
       </div>
       <div id="detail">
         <Outlet />
