@@ -4,15 +4,19 @@ import {
   useNavigation,
   useLoaderData,
   Form,
+  useSubmit,
 } from "react-router-dom";
+import { useEffect } from "react";
 import { getContacts, createContact } from "../contacts";
 
 // Q1: Here, we're passing off loader to the router in main.jsx (effetively index.jsx). Rather than utilizing contacts directly,
 // we're integrating contacts into the router so it has an "awareness" of the contacts. I have some question as to where
 // loader is invoked. Is it invoked by the router when the default route, (path: "/"). OR, is invoked by const { contacts } = useLoaderData(); below?
-export async function loader() {
-  const contacts = await getContacts();
-  return { contacts };
+export async function loader({ request }) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const contacts = await getContacts(q);
+  return { contacts, q };
 }
 
 export async function action() {
@@ -21,24 +25,32 @@ export async function action() {
 }
 
 export default function Root() {
-  const { contacts } = useLoaderData();
+  const { contacts, q } = useLoaderData();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  useEffect(() => {
+    document.getElementById("q").value = q;
+  }, [q]);
   return (
     <>
       <div id="sidebar">
         <h1>React Router Contacts</h1>
         <div>
-          <form id="search-form" role="search">
+          <Form id="search-form" role="search">
             <input
               id="q"
               aria-label="Search contacts"
               placeholder="Search"
               type="search"
               name="q"
+              defaultValue={q}
+              onChange={(event) => {
+                submit(event.currentTarget.form);
+              }}
             />
             <div id="search-spinner" aria-hidden hidden={true} />
             <div className="sr-only" aria-live="polite"></div>
-          </form>
+          </Form>
           <Form method="post">
             <button type="submit">New</button>
           </Form>
