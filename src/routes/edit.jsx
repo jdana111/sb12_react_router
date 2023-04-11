@@ -1,6 +1,4 @@
-import { Form, 
-  useLoaderData,
-redirect } from "react-router-dom";
+import { Form, useLoaderData, useNavigate, redirect } from "react-router-dom";
 import { updateContact } from "../contacts";
 
 export async function action({ request, params }) {
@@ -11,6 +9,7 @@ export async function action({ request, params }) {
 }
 
 export default function EditContact() {
+  const navigate = useNavigate();
   const { contact } = useLoaderData();
 
   return (
@@ -53,15 +52,19 @@ export default function EditContact() {
       </label>
       <label>
         <span>Notes</span>
-        <textarea
-          name="notes"
-          defaultValue={contact.notes}
-          rows={6}
-        />
+        <textarea name="notes" defaultValue={contact.notes} rows={6} />
       </label>
       <p>
         <button type="submit">Save</button>
-        <button type="button">Cancel</button>
+        <button
+          type="button"
+          onClick={() => {
+            console.log('Cancel');
+            navigate(-1);
+          }}
+        >
+          Cancel
+        </button>
       </p>
     </Form>
   );
